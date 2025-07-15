@@ -2,6 +2,9 @@
 
 This FastAPI server accepts flower images, classifies the flower species using a pre-trained TensorFlow Keras model, and generates a detailed description using the Ollama LLM. There is a baseline model which is just a CNN model, and there will be 2 transer learning models...
 
+
+## IMPORTANT: baseline_model.keras is not in the branch because of size, will have to download from the google drive and place in directory.
+
 ## Definitions
 
 - ngrok: A secure tunneling service that exposes a local server to the internet by creating a public URL forwarding to a local port. Useful for testing and sharing locally hosted applications without deploying them.
