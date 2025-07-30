@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from tensorflow import keras
 from click import File
+from fastapi import Form
 from io import BytesIO
 from PIL import Image
 
@@ -35,7 +36,10 @@ app.add_middleware(
 )
 
 # Load model and class list once
-flower_model = keras.models.load_model("baseline_model.keras")
+# flower_model = keras.models.load_model("baseline_model.keras")
+flower_model = keras.models.load_model("cnn_baseline_model.h5")
+
+
 # The list of class names that I found (need to verify)
 classes = ['pink primrose',    'hard-leaved pocket orchid', 'canterbury bells', 'sweet pea',     'wild geranium',     'tiger lily',           'moon orchid',              'bird of paradise', 'monkshood',        'globe thistle',         # 00 - 09
            'snapdragon',       "colt's foot",               'king protea',      'spear thistle', 'yellow iris',       'globe-flower',         'purple coneflower',        'peruvian lily',    'balloon flower',   'giant white arum lily', # 10 - 19
@@ -53,9 +57,13 @@ class FlowerRequest(BaseModel):
     flower_name: str
 
 @app.post("/flower-info/by-image")
-async def flower_info_by_image(file: UploadFile = File(...)):
+async def flower_info_by_image(
+    file: UploadFile = File(...),
+    model: str = Form("baseline")  # Default to "baseline"
+):
     try:
         print("✅ Received request to /flower-info/by-image")
+        print(f"🎯 Selected model: {model}") 
 
         # Step 1: Read and preprocess image
         contents = await file.read()
@@ -64,7 +72,7 @@ async def flower_info_by_image(file: UploadFile = File(...)):
         img = Image.open(BytesIO(contents)).convert("RGB")
         print(f"🖼️ Image opened and converted to RGB, original size: {img.size}")
 
-        img = img.resize((222, 222))
+        img = img.resize((224, 224))
         print(f"📏 Image resized to: {img.size}")
 
         img_array = image.img_to_array(img)
@@ -75,7 +83,15 @@ async def flower_info_by_image(file: UploadFile = File(...)):
         print(f"📦 Final model input shape: {img_array.shape}")
 
         # Step 2: Predict
-        prediction = flower_model.predict(img_array)
+        if model == "baseline":
+            prediction = flower_model.predict(img_array)
+        elif model == "model2":
+            print("Testing: Model 2 has be asked for.")
+            # prediction = model2.predict(img_array)
+        else:
+            print("Testing: Model 3 has be asked for.")
+            # prediction = model3.predict(img_array)
+        
         print(f"🤖 Prediction raw output: {prediction}")
 
         predicted_index = int(np.argmax(prediction, axis=1)[0])
