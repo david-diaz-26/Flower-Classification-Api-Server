@@ -39,6 +39,7 @@ app.add_middleware(
 # flower_model = keras.models.load_model("baseline_model.keras")
 flower_model = keras.models.load_model("cnn_baseline_model.h5")
 
+efficient_net_model = keras.models.load_model("EfficientNetB0.h5")
 
 # The list of class names that I found (need to verify)
 classes = ['pink primrose',    'hard-leaved pocket orchid', 'canterbury bells', 'sweet pea',     'wild geranium',     'tiger lily',           'moon orchid',              'bird of paradise', 'monkshood',        'globe thistle',         # 00 - 09
@@ -85,9 +86,9 @@ async def flower_info_by_image(
         # Step 2: Predict
         if model == "baseline":
             prediction = flower_model.predict(img_array)
-        elif model == "model2":
+        elif model == "Efficient Net B0":
             print("Testing: Model 2 has be asked for.")
-            # prediction = model2.predict(img_array)
+            prediction = efficient_net_model.predict(img_array)
         else:
             print("Testing: Model 3 has be asked for.")
             # prediction = model3.predict(img_array)
