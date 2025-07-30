@@ -73,22 +73,31 @@ async def flower_info_by_image(
         img = Image.open(BytesIO(contents)).convert("RGB")
         print(f"🖼️ Image opened and converted to RGB, original size: {img.size}")
 
-        img = img.resize((224, 224))
-        print(f"📏 Image resized to: {img.size}")
-
-        img_array = image.img_to_array(img)
-        print(f"🔢 Image converted to array, shape: {img_array.shape}")
-
-        img_array = img_array / 255.0
-        img_array = np.expand_dims(img_array, axis=0)
-        print(f"📦 Final model input shape: {img_array.shape}")
-
         # Step 2: Predict
         if model == "baseline":
+            img = img.resize((224, 224))
+            print(f"📏 Image resized to: {img.size}")
+
+            img_array = image.img_to_array(img)
+            print(f"🔢 Image converted to array, shape: {img_array.shape}")
+
+            img_array = img_array / 255.0
+            img_array = np.expand_dims(img_array, axis=0)
+            print(f"📦 Final model input shape: {img_array.shape}")
             prediction = flower_model.predict(img_array)
         elif model == "Efficient Net B0":
-            print("Testing: Model 2 has be asked for.")
+            # Resize to 224x224, keep pixel values [0-255], no normalization
+            img = img.resize((224, 224))
+            print(f"📏 Image resized to: {img.size}")
+
+            img_array = image.img_to_array(img).astype(np.float32)  # keep [0-255]
+            print(f"🔢 Image converted to array, shape: {img_array.shape}")
+
+            img_array = np.expand_dims(img_array, axis=0)
+            print(f"📦 Final model input shape: {img_array.shape}")
+
             prediction = efficient_net_model.predict(img_array)
+
         else:
             print("Testing: Model 3 has be asked for.")
             # prediction = model3.predict(img_array)
